@@ -1,0 +1,20 @@
+$textColor: yellow;
+$fontsize: 18px;
+
+.header {
+  color: $textColor;
+  font-size: $fontsize;
+
+
+  .hueta {
+    color: beige;
+
+    .beat {
+      color: aqua;
+    }
+  }
+
+  .roar {
+    color: beige;
+  }
+}

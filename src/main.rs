@@ -1,12 +1,28 @@
 use yew::prelude::*;
+use ybc::Button;
 
 
-#[function_component(App)]
-fn app() -> Html {
-    html! {
-        <h1 class={classes!("shit")}>{ "Hello Worldddd!" }</h1>
+struct App;
+
+impl Component for App {
+    type Message = ();
+    type Properties = ();
+
+    fn create(ctx: &Context<Self>) -> Self {
+
+
+        Self
+    }
+
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        html! {
+            // <ybc::Button>
+                { "Click me!" }
+            // </ybc::Button>
+        }
     }
 }
+
 
 fn main() {
     yew::start_app::<App>();
