@@ -1,6 +1,4 @@
 use yew::prelude::*;
-use ybc::Button;
-
 
 struct App;
 
@@ -9,16 +7,14 @@ impl Component for App {
     type Properties = ();
 
     fn create(ctx: &Context<Self>) -> Self {
-
-
         Self
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         html! {
-            // <ybc::Button>
+            <button class={classes!("button", "is-primary")}>
                 { "Click me!" }
-            // </ybc::Button>
+            </button>
         }
     }
 }
