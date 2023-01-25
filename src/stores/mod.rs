@@ -1,6 +1,6 @@
 use gloo_net::http::{ReferrerPolicy, Request};
 use serde::Serialize;
-use serde_wasm_bindgen::{to_value};
+use serde_wasm_bindgen::to_value;
 
 pub struct Store;
 
@@ -13,10 +13,7 @@ struct LoginData {
 impl Store {
     pub fn login(login: String, password: String) {
         wasm_bindgen_futures::spawn_local(async move {
-            let data = LoginData {
-                login,
-                password
-            };
+            let data = LoginData { login, password };
 
             // let data = to_value(&data).unwrap();
 
