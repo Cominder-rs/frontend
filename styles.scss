@@ -1,72 +1,8 @@
-@use "bulma/bulma-rtl";
+// Sharedes
+@import "./src/shared/input/input.scss";
 
-$textColor: yellow;
-$fontsize: 18px;
+// Components
+@import "./src/components/auth/auth.scss";
 
-.is-display-height {
-  height: 100vh;
-}
-
-.divider {
-  opacity: 0.1;
-  border: 1px solid #000000;
-  border-radius: 1px;
-  position: absolute;
-  left: 50%;
-  height: calc(100% - 80px);
-  top: 40px;
-}
-
-.auth-form {
-  height: 500px;
-}
-
-.left-part {
-  height: 430px;
-}
-
-.is-full-height {
-  height: 100%;
-}
-
-.fa-envelope {
-  font-family: "Font Awesome 5 Free", sans-serif;
-  font-weight: 900;
-  box-sizing: inherit;
-  font-style: normal;
-  font-variant: normal;
-  text-rendering: auto;
-  line-height: 1;
-}
-.fa-envelope:before {
-  content: "\f0e0";
-}
-
-.top-inputs {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 90px;
-}
-
-.fa-lock {
-  font-family: "Font Awesome 5 Free", sans-serif;
-  font-weight: 900;
-  box-sizing: inherit;
-  font-style: normal;
-  font-variant: normal;
-  text-rendering: auto;
-  line-height: 1;
-}
-
-.right-side {
-  height: 430px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.submit-button {
-  width: 290px;
-  background-color: #07F !important;
-}
+// Initial settings
+@import "variables.scss";

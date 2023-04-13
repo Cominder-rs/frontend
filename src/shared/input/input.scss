@@ -1,0 +1,21 @@
+@import "../../../variables.scss";
+
+.shared_input {
+  border-radius: 10px;
+  border-color: $grey !important;
+  transition: border-color 200ms ease !important;
+  box-shadow: none !important;
+
+  &:hover {
+    border-color: $primary !important;
+  }
+
+  &:focus {
+    border-color: $primary !important;
+  }
+
+}
+
+
+
+

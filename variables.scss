@@ -1,0 +1,38 @@
+$primary: #e5c890 !default;
+
+$info: #8caaee !default;
+$success: #a6d189 !default;
+$warning: #ef9f76 !default;
+$danger: #e78284 !default;
+
+$light: #F5F5F5 !default;
+$dark: #232634 !default;
+
+
+$base_border_radius: 10px;
+$small_border_radius: 5px;
+$large_border_radius: 100px;
+
+
+$layer_transition: 300ms cubic-bezier(0.33, 1, 0.68, 1);
+$slide_transition: 300ms cubic-bezier(0.25, 1, 0.5, 1);
+
+
+$grey-darker: hsl(0, 0%, 21%);
+$grey-dark: hsl(0, 0%, 29%);
+$grey: hsl(0, 0%, 48%);
+$grey-light: hsl(0, 0%, 71%);
+$grey-lighter: hsl(0, 0%, 86%);
+$grey-lightest: hsl(0, 0%, 93%);
+
+
+$white-ter: hsl(0, 0%, 96%);
+$white-bis: hsl(0, 0%, 98%);
+$white: hsl(0, 0%, 100%);
+
+// body {
+//   background-color: $dark;
+//   min-height: 100vh;
+//   min-width: 100vw;
+//   box-sizing: border-box;
+// }
