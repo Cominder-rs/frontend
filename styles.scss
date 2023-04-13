@@ -1,8 +1,8 @@
 // Sharedes
-@import "./src/shared/input/input.scss";
+@import "./src/shared/input/input_shared.scss";
 
 // Components
-@import "./src/components/auth/auth.scss";
+@import "./src/components/auth/auth_component.scss";
 
 // Initial settings
 @import "variables.scss";

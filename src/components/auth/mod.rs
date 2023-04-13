@@ -1,2 +1,2 @@
-mod auth;
-pub use auth::*;
+mod auth_component;
+pub use auth_component::*;

@@ -1,2 +1,2 @@
-mod input;
-pub use input::*;
+mod input_shared;
+pub use input_shared::*;

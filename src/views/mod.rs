@@ -1,2 +1,2 @@
-pub mod auth;
-pub use auth::*;
+pub mod auth_view;
+pub use auth_view::*;
