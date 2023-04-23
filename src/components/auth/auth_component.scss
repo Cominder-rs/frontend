@@ -41,6 +41,7 @@
 }
 
 .inputs_container {
+  font-weight: 500;
   display: flex;
   flex-direction: column;
   padding: 0;
@@ -52,21 +53,46 @@
 }
 
 .auth_input {
+  background: none;
+  font-weight: inherit;
   font-size: 16px;
   height: 54px;
 
   &:hover + label {
     color: $primary !important;
   }
+
+  &:hover ~ i, {
+    color: $primary !important;
+  }
+
+  &:focus ~ i {
+    color: $primary !important;
+    transform: scale(1.1);
+    transform: rotate(180deg);
+  }
 }
 
 .auth_input:focus + label {
+  z-index: 1;
   color: $primary;
   font-size: 12px;
   top: -9px;
   left: 10px;
   font-weight: 600;
   padding: 0 3px;
+}
+
+.arrow_up {
+  transition: {
+    duration: 200ms;
+    property: color, transform;
+  };
+  position: absolute;
+  top: 20px;
+  right: 13px;
+  color: $grey;
+  z-index: -1;
 }
 
 .auth_input_filled {
@@ -91,22 +117,131 @@
   position: absolute;
   top: 15px;
   left: 16px;
-  z-index: 10;
   background: $dark;
 
+
+  &:hover {
+    color: $primary;
+  }
 }
 
 .country_field {
+  padding: 15px 12px;
   border: 1px solid $grey;
   border-radius: 10px;
   transition: all 200ms;
   outline: 0;
+  z-index: -1;
 
-  &:hover {
+  &:hover, &:focus {
     border-color: $primary;
   }
+}
 
-  // &:focus-visible {
-  //   border: none;
-  // }
+.country_field_filled {
+
+  & + label {
+    top: -9px !important;
+    left: 10px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 0 3px !important;
+    z-index: 1;
+  }
+}
+
+.borders_div {
+  border-radius: 10px;
+  z-index: -1;
+  background: none;
+  top: 0;
+  opacity: 0;
+  border: 2px solid $primary;
+  position: absolute;
+  width: 100%;
+  height: 54px;
+}
+
+.auth_input:focus ~ .borders_div {
+  transition: opacity 200ms;
+  opacity: 1;
+}
+
+
+.countries {
+  border-radius: 5px !important;
+  display: flex;
+  visibility: hidden;
+  top: 62px;
+  z-index: 1;
+  background: $dark;
+  position: absolute;
+  width: 100%;
+  box-shadow: 0 8px 17px 2px rgba(0,0,0,.14),0 3px 14px 2px rgba(0,0,0,.12),0 5px 5px -3px rgba(0,0,0,.2);
+  flex-direction: column;
+  max-height: 335px;
+  overflow-y: scroll;
+  transform: scale(0.95);
+  opacity: 0;
+  transition: {
+    property: transform, opacity, visibility;
+    duration: 200ms;
+  }
+}
+
+.show_countries {
+  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.country {
+  padding: 0 15px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  width: 100%;
+  border-bottom: 1px solid $grey-darker;
+  justify-content: space-between;
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &::before {
+    left: 0;
+    transition: background-color 10ms ease;
+    top: 0;
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 56px;
+    z-index: -1;
+  }
+
+  &:hover::before {
+    background-color: rgba(122, 122, 122, .2);
+  }
+
+}
+
+.flag {
+  margin-right: 20px;
+}
+
+.phone_code {
+  color: $grey;
+}
+
+.country_left {
+  display: flex;
+  flex-direction: raw;
+}
+
+.country_overlap {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
 }

@@ -1,0 +1,1 @@
+pub const USERS_API: &str = "http://91.143.63.143:50501";

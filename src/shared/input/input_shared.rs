@@ -7,7 +7,7 @@ pub fn Input(
     #[prop(optional, into)] class: Option<AttributeValue>,
     #[prop(optional)] input_type: String,
     #[prop(optional)] placeholder: String,
-    #[prop(optional)] id: String,
+    #[prop(optional, into)] id: Option<AttributeValue>,
 ) -> impl IntoView {
     view! { cx, class="input is-primary shared_input",
         <input

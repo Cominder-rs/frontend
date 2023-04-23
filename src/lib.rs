@@ -7,7 +7,8 @@ mod core;
 mod shared;
 mod stores;
 mod views;
-
+pub mod apis;
+pub mod utils;
 use crate::core::{router::AppRouter, router::AppRouterProps};
 
 #[component]
