@@ -17,10 +17,10 @@ leptos_router = {version = "0.2", features = ["csr"]}
 console_error_panic_hook = "0.1"
 tonic = { version = "0.9", default-features = false, features = ["prost", "codegen"]}
 prost = { workspace = true }
-# tonic-web-wasm-client = { version = "0.3" }
 tonic-web-wasm-client = { path = "../../third-party/tonic-web-wasm-client" }
 users_proto = { path = "../users/proto", features = ["client"] }
 js-sys = "0.3"
+gloo-net = "0.2.6"
 
 [dependencies.web-sys]
 version = "0.3"
@@ -31,6 +31,8 @@ features = [
   "CssStyleDeclaration",
   "DomTokenList",
   "Element",
+  "Navigator",
+  "Clipboard",
 ]
 
 

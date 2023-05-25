@@ -11,14 +11,17 @@ where
     document.get_element_by_id(id).unwrap().unchecked_into::<T>()
 }
 
-pub fn is_err<T>(signal: &Option<Response<T>>) -> bool {
-    if let Some(response) = signal {
-        if response.is_err() {
-            true
+pub fn is_err<I, O>(action: Action<I, Response<O>>) -> bool {
+    action.value().with(|value|{
+        if let Some(response) = value {
+            if response.is_err() {
+                true
+            } else {
+                false
+            }
         } else {
             false
         }
-    } else {
-        false
-    }
+        
+    })
 }

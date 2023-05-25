@@ -11,27 +11,11 @@ use tonic_web_wasm_client::Client;
 use users_proto::{users_client::UsersClient as _UsersClient, Country, CountryCode, PhoneNumber};
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlDivElement, HtmlUListElement, KeyboardEvent};
+use js_sys::RegExp;
 use crate::core::types::Response;
+use crate::components::auth::COUNTRIES;
 
-async fn get_country(mut users_client: UsersClient) -> CountryCode {
-    let country_code = users_client
-        .get_country(())
-        .await
-        .unwrap_or(tonic::Response::new(Country {
-            code: CountryCode::Unknown as i32,
-        }))
-        .into_inner()
-        .code;
-
-    country_code.into()
-}
-
-async fn send_phone_number(mut users_client: UsersClient) {
-    let phone_number = PhoneNumber {
-        phone_number: "+79125224649".to_string(),
-    };
-    users_client.send_phone_number(phone_number).await.unwrap();
-}
+const ALLOWED_KEYS: [&'static str; 18] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Backspace", "+", "ArrowRight", "ArrowUp", "ArrowDown", "ArrowLeft", "Control", "Shift"];
 
 pub enum CountryFieldEvent {
     OnPaste(Event),
@@ -45,8 +29,9 @@ pub struct AuthStore {
     pub phone_number: RwSignal<String>,
     pub country: RwSignal<CountryCode>,
     pub country_field: RwSignal<String>,
-    pub country_resource: Resource<CountryCode, CountryCode>,
+    pub country_resource: Resource<CountryCode, Response<Country>>,
     pub send_phone_number: Action<String, Response<()>>,
+    pub request_status_indicator: RwSignal<bool>
 }
 
 impl AuthStore {
@@ -62,12 +47,16 @@ impl AuthStore {
                 "Bearer some-token".to_owned(),
             )])),
         );
-
+        let request_status_indicator = create_rw_signal(cx, false);
         let country_resource =
-            create_local_resource(cx, country, move |_| get_country(users_client.get_value()));
+            create_local_resource(cx, country, move |_| {
+                async move {
+                    let mut users_client = users_client.get_value();
+                    users_client.get_country(()).await
+                }
+            });
 
         let send_phone_number = create_action(cx, move |phone_number: &String| {
-            log!("shet");
             let phone_number = PhoneNumber {
                 phone_number: phone_number.to_owned()
             };
@@ -85,14 +74,76 @@ impl AuthStore {
             country,
             country_field,
             country_resource,
+            request_status_indicator,
+        }
+    }
+
+    pub fn check_paste_phone_number(&self, event: Event) {
+        let value = event_target_value(&event);
+        // event.prevent_default();
+        // log!(value);
+
+        let navigator = web_sys::window().unwrap().navigator();
+        // let text = navigator.clipboard();
+        // log!(text);        
+    }
+
+    pub fn check_input_phone_number(&self, event: KeyboardEvent) {
+        if event.ctrl_key() {
+            return;
+        }
+               
+        let key_code = event.key_code();
+        let key = event.key();
+
+                
+        if !ALLOWED_KEYS.contains(&key.as_str()) {
+            event.prevent_default();
+            return;
+        }
+        if event.key().as_str() == "=" {
+            event.prevent_default();
+            return;
+        }
+        
+        if key_code == 61 && self.phone_number.get_untracked().len() != 0 {
+            event.prevent_default();
+            return;
+        }
+
+        if self.phone_number.get_untracked().len() == 0 && key_code != 61 {
+            self.phone_number.set("+".to_string());
         }
     }
 
     pub fn set_phone_number(&self, event: Event) {
-        self.phone_number
-            .update(|phone_number| *phone_number = event_target_value(&event))
+        // log!(&event);
+        let value = event_target_value(&event);
+        
+        
+        self.phone_number.set(value.clone());
+        let mut counter = 0;
+        COUNTRIES.iter().for_each(|country| {
+            
+            let mut pattern = country.3.to_owned();
+            pattern.push_str(".*");
+            pattern.insert(0, '\\');
+            let regexp = RegExp::new(&pattern, "");
+            let country_field = get_element_by_id::<HtmlDivElement>("country_field");
+            if regexp.test(&value) {
+                self.country_field.set(country.2.to_string());
+                country_field.set_text_content(Some(country.2));
+                return;
+            }
+            counter += 1;
+            if counter == COUNTRIES.len() {
+                self.country_field.set("".to_string());
+                country_field.set_text_content(None);
+            }
+        });
     }
 
+    
     pub fn on_input_country(&self, event: CountryFieldEvent) {
         let target = match event {
             CountryFieldEvent::OnPaste(event) => event.target().unwrap(),
@@ -149,7 +200,7 @@ impl AuthStore {
                 .text_content()
                 .unwrap();
 
-            let filter = self.country_field.get().to_lowercase();
+            let filter = self.country_field.get_untracked().to_lowercase();
 
             if !country_name.to_lowercase().starts_with(&filter) {
                 _ = child_classes.add_1("is-hidden");
@@ -166,6 +217,11 @@ impl AuthStore {
 
     pub fn pick_country(&self, event: MouseEvent) {
         let target: HtmlUListElement = event_target(&event);
+
+        if target.id() == "countries".to_string() {
+            return;
+        }
+       
         let children = target.parent_element().unwrap().children();
 
         let country_name = children
@@ -182,7 +238,8 @@ impl AuthStore {
         self.country_field.set(country_name.clone());
         let country_field = get_element_by_id::<HtmlDivElement>("country_field");
         country_field.set_text_content(Some(&country_name));
-
-        self.phone_number.set(phone_number);
+        self.phone_number.update(|pn| {
+            *pn = phone_number
+        });
     }
 }

@@ -1,1 +1,2 @@
-pub const USERS_API: &str = "http://91.143.63.143:50501";
+pub const USERS_API: &str = "http://users.constellation-project.ru";
+

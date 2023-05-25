@@ -1,12 +1,12 @@
-$primary: #e5c890 !default;
+$primary: #e5c890;
 
-$info: #8caaee !default;
-$success: #a6d189 !default;
-$warning: #ef9f76 !default;
-$danger: #e78284 !default;
+$info: #8caaee;
+$success: #a6d189;
+$warning: #ef9f76;
+$danger: #e78284;
 
-$light: #F5F5F5 !default;
-$dark: #232634 !default;
+$light: #F5F5F5;
+$dark: #232634;
 
 
 $base_border_radius: 10px;
@@ -32,3 +32,15 @@ $white: hsl(0, 0%, 100%);
 
 $assets_dir: "./assets";
 $fonts_dir: "#{$assets_dir}/fonts";
+
+$easing: ease;
+
+$radius-small: 6px;
+$radius: 8px;
+$radius-large: 10px;
+
+$button-focus-box-shadow-size: 0 0 0 0;
+$button-focus-box-shadow-color: none;
+
+$input-focus-box-shadow-size: 0 0 0 0;
+$input-focus-box-shadow-color: none;

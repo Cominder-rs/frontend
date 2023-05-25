@@ -13,6 +13,7 @@ use crate::core::{router::AppRouter, router::AppRouterProps};
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
+    println!("Hui");
     view! { cx,
         <AppRouter />
     }

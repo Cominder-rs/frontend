@@ -1,8 +1,12 @@
+// Initial settings
+@import "variables.scss";
+
+// Bulma
+@import "./bulma/bulma.sass";
+
 // Sharedes
 @import "./src/shared/input/input_shared.scss";
 
 // Components
 @import "./src/components/auth/auth_component.scss";
 
-// Initial settings
-@import "variables.scss";
