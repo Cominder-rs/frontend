@@ -1,0 +1,146 @@
+@import "../../../variables.scss";
+
+
+@media screen and (max-width: 768px) {
+  @keyframes slide-up {
+    from {
+      opacity: 1;
+      transform: translateY(calc(100% - 45px));
+    }
+    to {
+      opacity: 0;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(calc(100% - 45px));
+    }
+  }
+  .notifications {
+    height: 1px;
+    max-height: 1px;
+    position: relative;
+    top: 30px !important;
+    width: 100vw;
+    right: unset !important;
+    height: auto;
+    display: flex;
+    margin: 0 !important;
+    justify-content: center;
+  > div {
+      z-index: 10;
+      position: absolute;
+      animation: slide-down 300ms ease forwards !important;
+    }
+  }
+  .hide {
+    animation: slide-up 300ms ease forwards !important;
+  }
+}
+
+@keyframes slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(calc(100% + 3vw));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(calc(100% + 3vw));
+  }
+}
+
+.notifications {
+  position: fixed;
+  right: 3vw;
+  top: 50px;
+  height: auto;
+  transition: height 300ms ease;
+
+  > div {
+    width: fit-content;
+    margin: 30px 0;
+    animation: slide-left 300ms ease forwards;
+    border-radius: 10px;
+    color: $text;
+    min-height: 48px;
+    font-weight: 600;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+  }
+
+  > div:first-child {
+    margin-top: 0;
+  }
+}
+
+.hide {
+  animation: slide-right 300ms ease forwards !important;
+}
+.text-content {
+  inline-size: min-content;
+  padding: 0 15px;
+  letter-spacing: .25px;
+  white-space: pre;
+  word-break: keep-all;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  padding: 10px;
+  height: 28px;
+  box-sizing: content-box;
+  border-radius: 10px 0 0 10px;
+  i {
+    
+  }  
+}
+
+.is-info {
+  background: $info;
+
+  :first-child {
+    background: $info-dark;
+  }
+}
+
+.is-success {
+  background: $success;
+
+  :first-child {
+    background: $success-dark;
+  }
+}
+
+.is-error {
+  background: $danger;
+
+  :first-child {
+    background: $danger-dark;
+  }
+}

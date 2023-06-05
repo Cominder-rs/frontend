@@ -1,5 +1,5 @@
 use leptos::*;
-use crate::components::auth::{AuthComponent, AuthComponentProps};
+use crate::components::auth::AuthComponent;
 use crate::stores::auth_store::AuthStore;
 
 #[component]

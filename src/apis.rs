@@ -1,2 +1,1 @@
-pub const USERS_API: &str = "http://users.constellation-project.ru";
-
+pub const USERS_SERVICE: &str = "https://constellation-project.ru/api/users";

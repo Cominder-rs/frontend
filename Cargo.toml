@@ -5,22 +5,31 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = ["dev"]
+dev = []
+prod = []
+test = []
+
 [dependencies]
 wasm-bindgen-futures = "0.4"
 serde-wasm-bindgen = { version = "0.4" }
 gloo-console = "0.2"
 wasm-bindgen = "0.2"
 time = { version = "0.3", features = ["wasm-bindgen"] }
-leptos = { version = "0.2", features = ["csr"]}
-leptos_meta = { version = "0.2", features = ["csr"]}
-leptos_router = {version = "0.2", features = ["csr"]}
+leptos = { version = "0.3", features = ["csr"]}
+leptos_meta = { version = "0.3", features = ["csr"]}
+leptos_router = {version = "0.3", features = ["csr"]}
 console_error_panic_hook = "0.1"
 tonic = { version = "0.9", default-features = false, features = ["prost", "codegen"]}
 prost = { workspace = true }
-tonic-web-wasm-client = { path = "../../third-party/tonic-web-wasm-client" }
+cfg-if = { workspace = true }
+tonic-web-wasm-client = { version = "0.4" }
 users_proto = { path = "../users/proto", features = ["client"] }
 js-sys = "0.3"
 gloo-net = "0.2.6"
+users_errors = { workspace = true }
+miniserde = "0.1"
 
 [dependencies.web-sys]
 version = "0.3"
@@ -33,6 +42,7 @@ features = [
   "Element",
   "Navigator",
   "Clipboard",
+  "MediaQueryList",
+  "Storage",
 ]
-
 

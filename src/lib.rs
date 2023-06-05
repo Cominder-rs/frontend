@@ -1,19 +1,18 @@
 #![feature(unboxed_closures)]
 
 use leptos::*;
-mod app;
+pub mod apis;
 mod components;
 mod core;
 mod shared;
 mod stores;
-mod views;
-pub mod apis;
 pub mod utils;
-use crate::core::{router::AppRouter, router::AppRouterProps};
+mod views;
+use crate::core::router::AppRouter;
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
-    println!("Hui");
+   
     view! { cx,
         <AppRouter />
     }

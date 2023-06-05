@@ -9,10 +9,13 @@ pub fn Input(
     #[prop(optional)] placeholder: String,
     #[prop(optional, into)] id: Option<AttributeValue>,
 ) -> impl IntoView {
-    view! { cx, class="input is-primary shared_input",
+    view! { cx,
         <input
             id=id
             class=class
+            class:input=true
+            class:is-primary=true
+            class:shared_input=true
             type=input_type
             placeholder=placeholder
             prop:value=value
