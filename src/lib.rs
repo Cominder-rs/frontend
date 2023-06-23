@@ -8,6 +8,7 @@ mod shared;
 mod stores;
 pub mod utils;
 mod views;
+pub mod svgs;
 use crate::core::router::AppRouter;
 
 #[component]

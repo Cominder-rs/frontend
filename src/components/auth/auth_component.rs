@@ -238,9 +238,9 @@ pub fn AuthComponent(cx: Scope) -> impl IntoView {
                     <form class="inputs_container">
                         <div class="intermediate_container">
                             <input
-                                on:input=move|e| {invalid_login.set(false); input_mask(login, e, r"^(\p{L}(?<!\s)\s?){0,30}$", Some("u"))}
+                                on:input=move|e| {invalid_login.set(false); busy_login.set(false); input_mask(login, e, r"^(\p{L}(?<!\s)\s?){0,30}$", Some("u"))}
                                 prop:value=login
-                                class:invalid-input=invalid_login
+                                class:invalid-input=move || {invalid_login() || busy_login()}
                                 class="auth_input input"
                                 id="login"
 
@@ -258,7 +258,7 @@ pub fn AuthComponent(cx: Scope) -> impl IntoView {
                                     if busy_login() {
                                         return "Логин занят"
                                     }
-                                    "Логин"    
+                                    "Логин"
                                 }}
                             </label>
                             <div class="borders_div" />

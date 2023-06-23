@@ -1,21 +1,107 @@
 @import "../../../variables.scss";
 
-.shared_input {
-  border-radius: 10px;
-  border-color: $grey !important;
-  transition: border-color 200ms ease !important;
-  box-shadow: none !important;
-
-  &:hover {
-    border-color: $primary !important;
-  }
-
-  &:focus {
-    border-color: $primary !important;
-  }
+.shared-input-container {
+  width: 100%;
+  position: relative;
+  height: 3.375rem;
+  display: flex;
+  align-items: center;
 
 }
 
+.shared-textarea-container {
+  min-height: 15rem;
+  max-height: 40rem;
+}
 
+.shared-input {
+  padding: 1rem;
+  background: none;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  border-color: $grey;
+  box-shadow: none;
+  transition: all 200ms ease;
 
+  + div {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    border-radius: 10px;
+    opacity: 0;
+    border: 2px solid $primary;
+    transition: all 200ms ease;
+  }
+  
+  ~ label {
+    position: absolute;
+    color: $grey;
+    left: 1rem;
+    cursor: text;
+    background: $dark;
+    transition: all 200ms ease;
+    top: 0.9375rem;  
+}
 
+  &:hover, &:focus {
+    border-color: $primary;
+  }
+
+  &:hover ~ label {
+    color: $primary;   
+  }
+
+  &:focus ~ label,  {
+    color: $primary;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0 3px;
+    top: calc(-1rem / 2 - 0.75rem / 10);
+    left: calc(1rem - 3px);
+
+  }
+
+  &:focus + div {
+    opacity: 1;
+  }
+}
+
+.filled-input {
+    color: $primary;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0 3px;
+    top: calc(-1rem / 2 - 0.75rem / 10) !important;
+    left: calc(1rem - 3px) !important;
+}
+.shared-input-invalid {
+  border-color: $danger;
+  color: $danger;
+  ~ label {
+    color: $danger;
+  }
+
+  + div {
+    border-color: $danger-dark;
+  }
+
+  &:hover, &:hover ~ label, &:focus {
+    border-color: $danger-dark;
+  }
+
+  &:focus ~ label, &:hover ~ label {
+    color: $danger-dark;
+  }
+}
+
+.shared-textarea {
+  width: 100%;
+  height: 100%;
+  min-height: unset !important;
+  max-height: unset !important;
+  resize: none;
+}

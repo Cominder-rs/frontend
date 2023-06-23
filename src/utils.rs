@@ -64,11 +64,9 @@ pub fn handle_response<T: Debug>(cx: Scope, response: Response<T>) -> Response<T
             }
             _ => (),
         }
-
-        response
-    } else {
-        response
+        return response
     }
+    response 
 }
 
 pub fn match_media(query: &str) -> bool {
@@ -77,10 +75,10 @@ pub fn match_media(query: &str) -> bool {
         .is_ok_and(|mql| mql.map_or(false, |mql| mql.matches()))
 }
 
-pub fn input_mask(signal: RwSignal<String>, event: ev::Event, mask: &str, flags: Option<&str>) {
+pub fn input_mask(signal: RwSignal<String>, event: ev::Event, regex: &str, flags: Option<&str>) {
     let current_value = signal.get_untracked();
     let entered_value = event_target_value(&event);
-    let regex = RegExp::new(mask, flags.unwrap_or(""));
+    let regex = RegExp::new(regex, flags.unwrap_or(""));
     if regex.test(&entered_value) {
         signal.set(entered_value);
     } else {

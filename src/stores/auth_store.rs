@@ -1,3 +1,5 @@
+use std::borrow::{Borrow, BorrowMut};
+
 use crate::core::types::Response;
 use crate::stores::notifier_store::NotificationVariant;
 use crate::utils::{get_element_by_id, match_media};
@@ -10,18 +12,19 @@ use leptos::{
     *,
 };
 use leptos_router::{use_navigate, NavigateOptions};
-use users_proto::{RegistryStatus, NewUser};
+use users_proto::users_v1_client::UsersV1Client;
+use users_proto::{NewUser, RegistryStatus};
 use wasm_bindgen::prelude::Closure;
 
 use crate::components::auth::COUNTRIES;
 use js_sys::RegExp;
 use tonic::{Code, Status};
 use tonic_web_wasm_client::Client;
-use users_proto::{
-    auth_client::AuthClient, ConfirmationCode, CountryCode, PhoneNumber,
-};
+use users_proto::{auth_client::AuthClient, ConfirmationCode, CountryCode, PhoneNumber};
 use wasm_bindgen::JsCast;
-use web_sys::{HtmlDivElement, HtmlInputElement, HtmlUListElement, InputEvent, KeyboardEvent, SubmitEvent};
+use web_sys::{
+    HtmlDivElement, HtmlInputElement, HtmlUListElement, InputEvent, KeyboardEvent, SubmitEvent,
+};
 
 use super::notifier_store::NotifierStore;
 use users_errors::AuthError;
@@ -97,16 +100,23 @@ impl AuthStore {
         let auth_stage = create_rw_signal(cx, AuthStage::Main);
         let is_confirmation_code_invalid = create_rw_signal(cx, false);
         let firstname = create_rw_signal(cx, String::new());
-        let lastname= create_rw_signal(cx, String::new());
+        let lastname = create_rw_signal(cx, String::new());
         let login = create_rw_signal(cx, String::new());
-        let city= create_rw_signal(cx, String::new());
+        let city = create_rw_signal(cx, String::new());
 
         let invalid_firstname = create_rw_signal(cx, false);
         let invalid_lastname = create_rw_signal(cx, false);
         let invalid_login = create_rw_signal(cx, false);
         let invalid_city = create_rw_signal(cx, false);
-        let busy_login = create_rw_signal(cx, false); 
+        let busy_login = create_rw_signal(cx, false);
 
+        let users_v1_client = use_context::<StoredValue<UsersV1Client<Client>>>(cx).expect("Users v1 client");
+        wasm_bindgen_futures::spawn_local(async move {
+            let mut users_v1_client = users_v1_client.get_value();
+            let res = users_v1_client.test_size(()).await;
+            
+        });
+        
         let get_country = create_action(cx, move |_: &()| async move {
             let mut auth_client = auth_client.get_value();
             let res = auth_client.get_country(()).await;
@@ -192,14 +202,12 @@ impl AuthStore {
                     Err(status) => {
                         if let AuthError::InvalidConfirmationCode = status.message().into() {
                             is_confirmation_code_invalid.set(true)
-                            
                         }
                     }
                 }
             }
         });
         let create_user = create_action(cx, move |_: &()| {
-
             let login = login.get_untracked();
             let firstname = firstname.get_untracked();
             let lastname = lastname.get_untracked();
@@ -221,16 +229,14 @@ impl AuthStore {
                         let storage = window().local_storage().unwrap().unwrap();
                         _ = storage.set_item("token", format!("Bearer {token}").as_str());
                         _ = use_navigate(cx)("/", NavigateOptions::default());
-                    },
-                    Err(status) => {
-                        match status.message().into() {
-                            AuthError::UsernameBusy => busy_login.set(true),
-                            AuthError::InvalidFirstname => invalid_firstname.set(true),
-                            AuthError::InvalidLastname => invalid_lastname.set(true),
-                            AuthError::InvalidCity => invalid_city.set(true),
-                            AuthError::InvalidUsername => invalid_login.set(true),
-                            _ => ()
-                        }
+                    }
+                    Err(status) => match status.message().into() {
+                        AuthError::UsernameBusy => busy_login.set(true),
+                        AuthError::InvalidFirstname => invalid_firstname.set(true),
+                        AuthError::InvalidLastname => invalid_lastname.set(true),
+                        AuthError::InvalidCity => invalid_city.set(true),
+                        AuthError::InvalidUsername => invalid_login.set(true),
+                        _ => (),
                     },
                 }
             }
@@ -273,57 +279,107 @@ impl AuthStore {
     }
 
     pub fn set_phone_number(&self, event: Event) {
-        let last_input_char = event.clone().unchecked_into::<InputEvent>().data();
-        let value = event_target_value(&event);
+        let mut value = event_target_value(&event);
 
         let allowed_keys = RegExp::new(
-            r"^\+?(\d+(?<=\d)\s?\(?\d*((?<=\d+)\))?)?((?<=\d+|\(\d+\))\s?)?(\d*)?((?<=\d+)-?)?(\d+)?((?<=\d+)-?)?(\d*)?$",
+            r"^\+?(\d+(?<=\d)\s?\(?\d*(\))?)?((?<=\d+|\(\d*\))\s?)?(\d*)?((?<=\d+)-?)?(\d+)?((?<=\d+)-?)?(\d*)?$",
             "",
         );
         if allowed_keys.test(&value) {
             self.invalid_phone_number.set(false);
+            if value.len() < self.phone_number.get_untracked().len() {
+                self.phone_number.set(value);
+                return;
+            }
             if self.phone_number.get_untracked().is_empty() && value != "+" && value.len() <= 1 {
                 self.phone_number.set("+".to_owned() + &value);
-            } else if self.country_field.get_untracked() == "Россия" {
-                if let Some(last_input_char) = last_input_char {
-                    let mask = "+9 (999) 999-99-99";
-
-                    if let Some(last_input_char) = last_input_char.chars().last() {
-                        let mask_chars: Vec<_> = mask.chars().collect();
-                        let mut new_value = value;
-                        loop {
-                            let next_mask_char = mask_chars.get(new_value.len());
-
-                            if let Some(next_mask_char) = next_mask_char {
-                                if *next_mask_char != '9'
-                                    && *next_mask_char != '+'
-                                    && last_input_char != '('
-                                    && last_input_char != ')'
-                                    && last_input_char != ' '
-                                    && last_input_char != '-'
-                                {
-                                    if new_value.len() == 3 {
-                                        let mut to_insert = " ".to_string();
-                                        to_insert.push(*next_mask_char);
-                                        new_value.insert_str(new_value.len() - 1, &to_insert);
-                                    } else {
-                                        new_value.push(*next_mask_char);
-                                    }
-                                } else {
-                                    break;
-                                }
-                            } else {
-                                break;
-                            }
-                        }
-                        self.phone_number.set(new_value);
-                    }
-                } else {
-                    self.phone_number.set(value);
-                }
-            } else {
+            } else if !value.starts_with("+7") {
                 self.phone_number.set(value);
+            } else {
+                let mask = "+9 (999) 999-99-99";
+                value.retain(|i| i != '-' || i != '(' || i != ')' || i != ' ');
+                let mut new_value = String::new();
+                let mut mask_char_idx = 0;
+                for input_char in value.chars() {
+                    let mask_char = mask.chars().nth(mask_char_idx);
+
+                    if let Some(mask_char) = mask_char {
+                        if mask_char != '9'
+                            && mask_char != '+'
+                            && input_char != '+'
+                            && input_char != '('
+                            && input_char != ')'
+                            && input_char != '-'
+                            && input_char != ' '
+                        {
+                            let mut to_push = String::from(mask_char);
+                            if let Some(next_mask_char) = mask.chars().nth(mask_char_idx + 1) {
+                                if next_mask_char != '9' {
+                                    mask_char_idx += 1;
+                                    to_push.push(next_mask_char);
+                                }
+                            }
+                            to_push.push(input_char);
+                            new_value.push_str(&to_push);
+                            mask_char_idx += 1;
+                        } else {
+                            new_value.push(input_char)
+                        }
+                    } else {
+                        new_value.push(input_char)
+                    }
+                    mask_char_idx += 1;
+                }
+                if allowed_keys.test(&new_value) {
+                    self.phone_number.set(new_value);
+                } else {
+                    new_value.retain(|i| i != '-' && i != '(' && i != ')' && i != ' ');
+                    log!("New value afret retain: {new_value}");
+                    self.phone_number.set(new_value);
+                }
             }
+            // } else if value.starts_with("+7") {
+            //     let mask = "+9 999 999-99-99";
+            //     value.retain(|i| i != '-' || i != '(' || i != ')' || i != ' ');
+            //     let mut new_value = String::new();
+            //     let mut mask_char_idx = 0;
+            //     for input_char in value.chars() {
+            //         let mask_char = mask.chars().nth(mask_char_idx);
+
+            //         if let Some(mask_char) = mask_char {
+            //             log!("Mask char {}", mask_char);
+            //             log!("Input char {}", input_char);
+            //             if mask_char != '9'
+            //                 && mask_char != '+'
+            //                 && input_char != '+'
+            //                 && input_char != '('
+            //                 && input_char != ')'
+            //                 && input_char != '-'
+            //                 && input_char != ' '
+            //             {
+            //                 let mut to_push = String::from(mask_char);
+            //                 if let Some(next_mask_char) = mask.chars().nth(mask_char_idx + 1) {
+            //                     if next_mask_char != '9' {
+            //                         mask_char_idx += 1;
+            //                         to_push.push(next_mask_char);
+            //                     }
+            //                 }
+            //                 to_push.push(input_char);
+            //                 new_value.push_str(&to_push);
+            //                 mask_char_idx += 1;
+            //             } else {
+            //                 new_value.push(input_char)
+            //             }
+            //         } else {
+            //             new_value.push(input_char)
+            //         }
+            //         mask_char_idx += 1;
+            //         log!("{}", new_value);
+            //     }
+            //     self.phone_number.set(new_value);
+            // } else {
+            //     self.phone_number.set(value);
+            
 
             let mut counter = 0;
             COUNTRIES.iter().for_each(|country| {
@@ -487,8 +543,5 @@ impl AuthStore {
             &callback.into_js_value().into(),
             60000,
         );
-    }
-
-    pub fn create_user(&self, event: SubmitEvent) {
     }
 }
